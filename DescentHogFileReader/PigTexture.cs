@@ -10,5 +10,6 @@
         public int AveColor { get; set; }
         public int Offset { get; set; }
         public byte[] Data { get; set; }
+        public bool RunLengthEncoded => (Flags & 8) != 0;
     }
 }

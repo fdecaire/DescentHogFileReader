@@ -63,8 +63,7 @@ namespace DescentHogFileReader
                     rowSize += 256;
                 }
 
-                var isRunlengthEncoded = (texture.Flags & 8) != 0;
-                if (isRunlengthEncoded)
+                if (texture.RunLengthEncoded)
                 {
                     var size = BitConverter.ToInt32(buffer, offset);
                     texture.Data = new byte[size];

@@ -56,7 +56,7 @@ namespace DescentHogFileReader
                 File.Delete(_textureOutputDirectory+ "texture_list.txt");
                 foreach (var texture in pigData.Textures)
                 {
-                    File.AppendAllText(_textureOutputDirectory + "texture_list.txt", texture.Name + " (" + texture.Width + " x " + texture.Height + $", Frame:{texture.DFlags & 63})" + Environment.NewLine);
+                    File.AppendAllText(_textureOutputDirectory + "texture_list.txt", texture.Name + " (" + texture.Width + " x " + texture.Height + $", Frame:{texture.DFlags & 63}{(texture.RunLengthEncoded ? " RLE" : "")})" + Environment.NewLine);
                 }
             }
 
