@@ -8,6 +8,7 @@ namespace DescentHogFileReader
     class Program
     {
         private static string _outputDirectory = @"c:\temp\DescentAssets\";
+        private static string _textureOutputDirectory = @"c:\temp\DescentAssets\Textures\";
 
         static void Main(string[] args)
         {
@@ -47,7 +48,16 @@ namespace DescentHogFileReader
                 // read the textures and sounds
                 var pigData = new PigFile(buffer);
 
-
+                // dump all the textures
+                if (!Directory.Exists(_textureOutputDirectory))
+                {
+                    Directory.CreateDirectory(_textureOutputDirectory);
+                }
+                File.Delete(_textureOutputDirectory+ "texture_list.txt");
+                foreach (var texture in pigData.Textures)
+                {
+                    File.AppendAllText(_textureOutputDirectory + "texture_list.txt", texture.Name + " (" + texture.Width + " x " + texture.Height + ")" + Environment.NewLine);
+                }
             }
 
 
