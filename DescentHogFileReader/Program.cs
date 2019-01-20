@@ -76,13 +76,12 @@ namespace DescentHogFileReader
                     {
                         try
                         {
-                        var bitmap = new Bitmap(texture.Width, texture.Height, PixelFormat.Format24bppRgb);
-                        var bmData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
-                        var pNative = bmData.Scan0;
-                        Marshal.Copy(texture.Data, 0, pNative, texture.Width * texture.Height * 3);
-                        bitmap.UnlockBits(bmData);
-                        bitmap.Save(_textureOutputDirectory + texture.Name.Trim() + ".png", ImageFormat.Png);
-
+                            var bitmap = new Bitmap(texture.Width, texture.Height, PixelFormat.Format24bppRgb);
+                            var bmData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+                            var pNative = bmData.Scan0;
+                            Marshal.Copy(texture.Data, 0, pNative, texture.Width * texture.Height * 3);
+                            bitmap.UnlockBits(bmData);
+                            bitmap.Save(_textureOutputDirectory + texture.Name.Trim() + ".png", ImageFormat.Png);
                         }
                         catch (Exception e)
                         {
