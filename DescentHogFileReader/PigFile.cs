@@ -64,9 +64,6 @@ namespace DescentHogFileReader
             // read all the texture data
             foreach (var texture in Textures)
             {
-                //if (texture.Name != "door13")
-                //    continue;
-
                 offset = texture.Offset + pigDataStart;
 
                 if (texture.RunLengthEncoded)
