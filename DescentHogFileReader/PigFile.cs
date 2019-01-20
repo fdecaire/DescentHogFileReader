@@ -24,7 +24,7 @@ namespace DescentHogFileReader
             {
                 var pigTexture = new PigTexture();
               
-                pigTexture.Name = buffer.ByteArrayToString(offset, 8);
+                pigTexture.Name = buffer.ByteArrayToString(offset, 8).Trim();
                 offset += 8;
 
                 pigTexture.DFlags = buffer[offset++];
@@ -64,11 +64,21 @@ namespace DescentHogFileReader
             // read all the texture data
             foreach (var texture in Textures)
             {
+                //if (texture.Name != "door13")
+                //    continue;
+
                 offset = texture.Offset + pigDataStart;
 
                 if (texture.RunLengthEncoded)
                 {
                     var size = BitConverter.ToInt32(buffer, offset);
+                    offset += 4;
+                    offset += texture.Height;
+                    if ((texture.DFlags & 32) != 0)
+                    {
+                        offset += texture.Height;
+                    }
+                    
                     texture.Data = new byte[size];
                     for (var i = 0; i < size; i++)
                     {
@@ -78,7 +88,7 @@ namespace DescentHogFileReader
                     // uncompress
                     var result = new List<byte>();
                     int j = 0;
-                    while (j < size)
+                    while (j < size-5)
                     {
                         var color = texture.Data[j++];
                         if (color == 0xe0)
