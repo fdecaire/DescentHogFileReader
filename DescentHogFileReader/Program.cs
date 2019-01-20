@@ -72,7 +72,7 @@ namespace DescentHogFileReader
                 File.Delete(_textureOutputDirectory+ "texture_list.txt");
                 foreach (var texture in pigData.Textures)
                 {
-                    if (/*texture.Name.Trim() == "door13" &&*/ (texture.DFlags & 63) == 0)
+                    if ((texture.DFlags & 63) == 0)
                     {
                         try
                         {
@@ -81,7 +81,7 @@ namespace DescentHogFileReader
                         var pNative = bmData.Scan0;
                         Marshal.Copy(texture.Data, 0, pNative, texture.Width * texture.Height * 3);
                         bitmap.UnlockBits(bmData);
-                        bitmap.Save(_textureOutputDirectory + texture.Name.Trim() + ".jpg", ImageFormat.Jpeg);
+                        bitmap.Save(_textureOutputDirectory + texture.Name.Trim() + ".png", ImageFormat.Png);
 
                         }
                         catch (Exception e)
