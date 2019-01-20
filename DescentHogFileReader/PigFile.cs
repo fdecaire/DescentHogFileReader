@@ -11,7 +11,7 @@ namespace DescentHogFileReader
         public List<PigTexture> Textures { get; set; } = new List<PigTexture>();
         public List<PigSound> Sounds { get; set; } = new List<PigSound>();
 
-        public PigFile(byte [] buffer)
+        public PigFile(byte [] buffer, Palette palette)
         {
             int offset = BitConverter.ToInt32(buffer, 0);
             TotalTextures = BitConverter.ToInt32(buffer, offset);
@@ -110,8 +110,6 @@ namespace DescentHogFileReader
 
                     // replace with decoded data
                     texture.Data = result.ToArray();
-
-                    //TODO: need to convert indexed data into 32 bit per pixel true color
                 }
                 else
                 {
@@ -122,6 +120,18 @@ namespace DescentHogFileReader
                         texture.Data[i] = buffer[i + offset];
                     }
                 }
+
+                //TODO: need to convert indexed data into 32 bit per pixel true color
+                var endResults = new List<byte>();
+                for (var i = 0; i < texture.Data.Length; i++)
+                {
+                    var color = palette.paletteColors[texture.Data[i]];
+                    endResults.Add(color.R);
+                    endResults.Add(color.G);
+                    endResults.Add(color.B);
+                }
+
+                texture.Data = endResults.ToArray();
             }
         }
     }

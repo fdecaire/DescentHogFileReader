@@ -13,7 +13,7 @@ namespace DescentHogFileReader
     {
         private static string _outputDirectory = @"c:\temp\DescentAssets\";
         private static string _textureOutputDirectory = @"c:\temp\DescentAssets\Textures\";
-
+        
         static void Main(string[] args)
         {
             var assembly = Assembly.GetExecutingAssembly();
@@ -44,13 +44,25 @@ namespace DescentHogFileReader
 
             }
 
+            // read the palette
+            Palette paletteData;
+            using (var stream = assembly.GetManifestResourceStream("DescentHogFileReader.palette.256"))
+            {
+                byte[] buffer = new byte[stream.Length];
+                stream.Read(buffer, 0, buffer.Length);
+
+                paletteData = new Palette(buffer);
+            }
+
+
+            // read the textures
             using (var stream = assembly.GetManifestResourceStream("DescentHogFileReader.DESCENT.PIG"))
             {
                 byte[] buffer = new byte[stream.Length];
                 stream.Read(buffer, 0, buffer.Length);
 
                 // read the textures and sounds
-                var pigData = new PigFile(buffer);
+                var pigData = new PigFile(buffer, paletteData);
 
                 // dump all the textures
                 if (!Directory.Exists(_textureOutputDirectory))
@@ -64,12 +76,12 @@ namespace DescentHogFileReader
                     {
                         try
                         {
-                        var bitmap = new Bitmap(texture.Width, texture.Height, PixelFormat.Format8bppIndexed);
+                        var bitmap = new Bitmap(texture.Width, texture.Height, PixelFormat.Format24bppRgb);
                         var bmData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
                         var pNative = bmData.Scan0;
-                        Marshal.Copy(texture.Data, 0, pNative, texture.Width * texture.Height);
+                        Marshal.Copy(texture.Data, 0, pNative, texture.Width * texture.Height * 3);
                         bitmap.UnlockBits(bmData);
-                        bitmap.Save(_textureOutputDirectory + texture.Name.Trim() + ".bmp", ImageFormat.Jpeg);
+                        bitmap.Save(_textureOutputDirectory + texture.Name.Trim() + ".jpg", ImageFormat.Jpeg);
 
                         }
                         catch (Exception e)

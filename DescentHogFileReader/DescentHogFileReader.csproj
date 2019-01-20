@@ -8,11 +8,13 @@
   <ItemGroup>
     <None Remove="DESCENT.HOG" />
     <None Remove="DESCENT.PIG" />
+    <None Remove="palette.256" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="DESCENT.HOG" />
     <EmbeddedResource Include="DESCENT.PIG" />
+    <EmbeddedResource Include="palette.256" />
   </ItemGroup>
 
   <ItemGroup>
