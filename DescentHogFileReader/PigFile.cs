@@ -71,6 +71,32 @@ namespace DescentHogFileReader
                     {
                         texture.Data[i] = buffer[i + offset];
                     }
+
+                    // uncompress
+                    var result = new List<byte>();
+                    int j = 0;
+                    while (j < size)
+                    {
+                        var color = texture.Data[j];
+                        if ((color & 0xe0) == 0xe0)
+                        {
+                            j++;
+                            var count = color & 0x1f;
+                            for (var k = 0; k < count; k++)
+                            {
+                                result.Add(texture.Data[j]);
+                            }
+                        }
+                        else
+                        {
+                            result.Add(texture.Data[j++]);
+                        }
+                    }
+
+                    // replace with decoded data
+                    texture.Data = result.ToArray();
+
+                    //TODO: need to convert indexed data into 32 bit per pixel true color
                 }
                 else
                 {
