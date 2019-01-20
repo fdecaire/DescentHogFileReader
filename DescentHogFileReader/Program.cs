@@ -60,14 +60,21 @@ namespace DescentHogFileReader
                 File.Delete(_textureOutputDirectory+ "texture_list.txt");
                 foreach (var texture in pigData.Textures)
                 {
-                    if (texture.Name.Trim() == "door13" && (texture.DFlags & 63) == 0)
+                    if (/*texture.Name.Trim() == "door13" &&*/ (texture.DFlags & 63) == 0)
                     {
+                        try
+                        {
                         var bitmap = new Bitmap(texture.Width, texture.Height, PixelFormat.Format8bppIndexed);
                         var bmData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
                         var pNative = bmData.Scan0;
                         Marshal.Copy(texture.Data, 0, pNative, texture.Width * texture.Height);
                         bitmap.UnlockBits(bmData);
                         bitmap.Save(_textureOutputDirectory + texture.Name.Trim() + ".bmp", ImageFormat.Jpeg);
+
+                        }
+                        catch (Exception e)
+                        {
+                        }
                     }
 
                     File.AppendAllText(_textureOutputDirectory + "texture_list.txt", texture.Name + " (" + texture.Width + " x " + texture.Height + $", Frame:{texture.DFlags & 63}{(texture.RunLengthEncoded ? " RLE" : "")})" + Environment.NewLine);

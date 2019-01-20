@@ -34,6 +34,12 @@ namespace DescentHogFileReader
                 pigTexture.AveColor = buffer[offset++];
                 pigTexture.Offset = BitConverter.ToInt32(buffer, offset);
                 offset += 4;
+
+                if ((pigTexture.DFlags & 128) != 0)
+                {
+                    //pigTexture.Width += 256;
+                }
+
                 Textures.Add(pigTexture);
             }
 
@@ -41,7 +47,7 @@ namespace DescentHogFileReader
             {
                 var pigSound = new PigSound();
 
-                pigSound.Name = buffer.ByteArrayToString(offset, 8);
+                pigSound.Name = buffer.ByteArrayToString(offset, 8).Trim();
                 offset += 8;
                 pigSound.Length = BitConverter.ToInt32(buffer, offset);
                 offset += 4;
@@ -53,15 +59,12 @@ namespace DescentHogFileReader
                 Sounds.Add(pigSound);
             }
 
+            var pigDataStart = offset;
+
             // read all the texture data
             foreach (var texture in Textures)
             {
-                var rowSize = texture.Width;
-
-                if ((texture.DFlags & 128) != 0) // DBM_FLAG_LARGE
-                {
-                    rowSize += 256;
-                }
+                offset = texture.Offset + pigDataStart;
 
                 if (texture.RunLengthEncoded)
                 {
@@ -77,19 +80,24 @@ namespace DescentHogFileReader
                     int j = 0;
                     while (j < size)
                     {
-                        var color = texture.Data[j];
+                        var color = texture.Data[j++];
+                        if (color == 0xe0)
+                        {
+                            continue;
+                        }
+
                         if ((color & 0xe0) == 0xe0)
                         {
-                            j++;
                             var count = color & 0x1f;
+                            color = texture.Data[j++];
                             for (var k = 0; k < count; k++)
                             {
-                                result.Add(texture.Data[j]);
+                                result.Add(color);
                             }
                         }
                         else
                         {
-                            result.Add(texture.Data[j++]);
+                            result.Add(color);
                         }
                     }
 
