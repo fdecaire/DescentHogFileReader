@@ -11,5 +11,6 @@
         public int Offset { get; set; }
         public byte[] Data { get; set; }
         public bool RunLengthEncoded => (Flags & 8) != 0;
+        public bool Animation { get; set; }
     }
 }

@@ -133,6 +133,18 @@ namespace DescentHogFileReader
 
                 texture.Data = endResults.ToArray();
             }
+
+            for (var i = 0; i < Textures.Count; i++)
+            {
+                if (i + 1 < Textures.Count)
+                {
+                    if (Textures[i].Name == Textures[i + 1].Name)
+                    {
+                        Textures[i].Animation = true;
+                        Textures[i + 1].Animation = true;
+                    }
+                }
+            }
         }
     }
 }

@@ -13,7 +13,7 @@ namespace DescentHogFileReader
     {
         private static string _outputDirectory = @"c:\temp\DescentAssets\";
         private static string _textureOutputDirectory = @"c:\temp\DescentAssets\Textures\";
-        
+
         static void Main(string[] args)
         {
             var assembly = Assembly.GetExecutingAssembly();
@@ -69,23 +69,22 @@ namespace DescentHogFileReader
                 {
                     Directory.CreateDirectory(_textureOutputDirectory);
                 }
-                File.Delete(_textureOutputDirectory+ "texture_list.txt");
+
+                File.Delete(_textureOutputDirectory + "texture_list.txt");
                 foreach (var texture in pigData.Textures)
                 {
-                    if ((texture.DFlags & 63) == 0)
+                    try
                     {
-                        try
-                        {
-                            var bitmap = new Bitmap(texture.Width, texture.Height, PixelFormat.Format24bppRgb);
-                            var bmData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
-                            var pNative = bmData.Scan0;
-                            Marshal.Copy(texture.Data, 0, pNative, texture.Width * texture.Height * 3);
-                            bitmap.UnlockBits(bmData);
-                            bitmap.Save(_textureOutputDirectory + texture.Name.Trim() + ".png", ImageFormat.Png);
-                        }
-                        catch (Exception e)
-                        {
-                        }
+                        var bitmap = new Bitmap(texture.Width, texture.Height, PixelFormat.Format24bppRgb);
+                        var bmData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+                        var pNative = bmData.Scan0;
+                        Marshal.Copy(texture.Data, 0, pNative, texture.Width * texture.Height * 3);
+                        bitmap.UnlockBits(bmData);
+                        bitmap.Save(_textureOutputDirectory + texture.Name.Trim() + (texture.Animation ? "_" + (texture.DFlags & 63).ToString() : "") + ".png", ImageFormat.Png);
+                    }
+                    catch
+                    {
+                        // ignored
                     }
 
                     File.AppendAllText(_textureOutputDirectory + "texture_list.txt", texture.Name + " (" + texture.Width + " x " + texture.Height + $", Frame:{texture.DFlags & 63}{(texture.RunLengthEncoded ? " RLE" : "")})" + Environment.NewLine);
