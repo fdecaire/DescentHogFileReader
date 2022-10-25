@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -38,10 +39,11 @@ namespace DescentHogFileReader
                     // write file to output directory
                     File.WriteAllBytes(_outputDirectory + fileData[fileData.Count - 1].FileName, fileData[fileData.Count - 1].Data);
 
-                    Console.WriteLine(fileData[fileData.Count - 1].FileName + "   (" + fileData[fileData.Count - 1].FileSize.ToString("N0") + ")");
+                    //Console.WriteLine(fileData[fileData.Count - 1].FileName + "   (" + fileData[fileData.Count - 1].FileSize.ToString("N0") + ")");
                     totalFiles++;
                 }
 
+                
             }
 
             // read the palette
@@ -71,6 +73,7 @@ namespace DescentHogFileReader
                 }
 
                 File.Delete(_textureOutputDirectory + "texture_list.txt");
+                File.Delete(_textureOutputDirectory + "texture_names.txt");
                 foreach (var texture in pigData.Textures)
                 {
                     try
@@ -87,12 +90,53 @@ namespace DescentHogFileReader
                         // ignored
                     }
 
-                    File.AppendAllText(_textureOutputDirectory + "texture_list.txt", texture.Name + " (" + texture.Width + " x " + texture.Height + $", Frame:{texture.DFlags & 63}{(texture.RunLengthEncoded ? " RLE" : "")})" + Environment.NewLine);
+                    File.AppendAllText(_textureOutputDirectory + "texture_list.txt", texture.Name + " (" + texture.Width + " x " + texture.Height + $", Frame:{texture.DFlags & 63}){(texture.RunLengthEncoded ? " RLE" : "")} " + (texture.Transparent ? " Transparent" : "") + (texture.SuperTransparent ? " SuperTransparent" : "") + (texture.PagedOut ? " PagedOut" : "") + Environment.NewLine);
+                    //File.AppendAllText(_textureOutputDirectory + "texture_names.txt", texture.Name + Environment.NewLine);
+                }
+
+                foreach (var texture in pigData.Textures.Select(n => n.Name).Distinct())
+                {
+                    File.AppendAllText(_textureOutputDirectory + "texture_names.txt", texture + Environment.NewLine);
+                }
+                
+            }
+
+
+            // scan each file to see if it contains texture names
+            using (var stream = assembly.GetManifestResourceStream("DescentHogFileReader.DESCENT.HOG"))
+            {
+                byte[] buffer = new byte[stream.Length];
+                stream.Read(buffer, 0, buffer.Length);
+                //rock169
+                for (int i = 0; i < buffer.Length; i++)
+                {
+                    if (buffer[i] == 'r' || buffer[i] == 'R')
+                    {
+                        if (i + 1 < buffer.Length && (buffer[i + 1] == 'o' || buffer[i + 1] == 'O'))
+                        {
+                            if (i + 2 < buffer.Length && (buffer[i + 2] == 'c' || buffer[i + 2] == 'C'))
+                            {
+                                if (i + 3 < buffer.Length && (buffer[i + 3] == 'k' || buffer[i + 3] == 'K'))
+                                {
+                                    if (i + 4 < buffer.Length && buffer[i + 4] == '0')
+                                    {
+                                        if (i + 5 < buffer.Length && buffer[i + 5] == '0')
+                                        {
+                                            if (i + 6 < buffer.Length && buffer[i + 6] == '1')
+                                            {
+                                                string ignore = "";
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
 
-            Console.ReadKey();
+            //Console.ReadKey();
         }
     }
 }

@@ -2,18 +2,24 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="DESCENT.DEM" />
     <None Remove="DESCENT.HOG" />
+    <None Remove="DESCENT.PHX" />
     <None Remove="DESCENT.PIG" />
+    <None Remove="DESCENT2.ADV" />
     <None Remove="palette.256" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="DESCENT.DEM" />
     <EmbeddedResource Include="DESCENT.HOG" />
+    <EmbeddedResource Include="DESCENT.PHX" />
     <EmbeddedResource Include="DESCENT.PIG" />
+    <EmbeddedResource Include="DESCENT2.ADV" />
     <EmbeddedResource Include="palette.256" />
   </ItemGroup>
 
